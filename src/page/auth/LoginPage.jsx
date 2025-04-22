@@ -3,20 +3,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { login, verify } from "../../store/slice/authSlice";
 import { FcGoogle } from "react-icons/fc";
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useTheme } from "../../hook/useTheme";
+import LoadingOverlay from "../LoadingPage";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("michael@example.com");
   const [password, setPassword] = useState("12345");
-  const {  isDark } = useTheme();
+  const { isDark } = useTheme();
 
 
   const dispatch = useDispatch();
   const navigate = useNavigate(); // useNavigate hook สำหรับการเปลี่ยนเส้นทาง
 
-  const { isLoggedIn, status, error } = useSelector((state) => state.auth);
- 
+  const { isLoggedIn, status } = useSelector((state) => state.auth);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Add logic for form submission
@@ -28,7 +29,7 @@ const LoginPage = () => {
   const LoginPressed = () => {
     // ทำการ dispatch action login
     const credentials = { email, password };
-    const options ={
+    const options = {
       autoClose: 2000,
       position: "bottom-center",
       theme: "dark",  // ใช้ธีม dark
@@ -40,13 +41,13 @@ const LoginPage = () => {
       .then((data) => {
         // ถ้าการล็อกอินสำเร็จ
         dispatch(verify())
-        toast.success("เข้าสู่ระบบสําเร็จ",options)
+        toast.success("เข้าสู่ระบบสําเร็จ", options)
 
         navigate("/home");
       })
       .catch((error) => {
         // ถ้าการล็อกอินล้มเหลว
-        toast.error(`${error.message || error}`,options);
+        toast.error(`${error.message || error}`, options);
       });
   };
 
@@ -55,9 +56,12 @@ const LoginPage = () => {
     // เปิด URL สำหรับเริ่มกระบวนการล็อกอินด้วย Google
     window.location.href = "http://localhost:4000/api/auth/google";
   };
+  if (status == "loading") {
+    return <LoadingOverlay />
+  }
   return (
     <div className="min-h-screen flex items-center justify-center ">
-      <div style={(isDark ? { background: "#2D3748"} : {background:"white"})} className="w-full max-w-md p-8 space-y-6   rounded-lg shadow-md">
+      <div style={(isDark ? { background: "#2D3748" } : { background: "white" })} className="w-full max-w-md p-8 space-y-6   rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center">Login</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -116,7 +120,7 @@ const LoginPage = () => {
         </div>
       </div>
 
-       {/* Toast Container */}
+      {/* Toast Container */}
     </div>
   );
 };

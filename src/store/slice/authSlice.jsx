@@ -4,6 +4,8 @@ import Cookies from "js-cookie";
 
 export const login = createAsyncThunk('auth/login', async (credentials, { rejectWithValue }) => {
   try {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     const response = await api.post("/signin", credentials); // ใช้ api instance
     return response.data;
   } catch (error) {
@@ -124,6 +126,7 @@ const authSlice = createSlice({
       // signup, verify
       .addCase(signup.pending, (state) => {
         state.status = "loading";
+        
       })
       .addCase(signup.fulfilled, (state, action) => {
         state.status = "succeeded";
