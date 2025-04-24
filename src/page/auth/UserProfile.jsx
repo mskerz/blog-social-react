@@ -97,7 +97,7 @@ function UserProfile() {
               <div className="flex -mt-12 ml-5 justify-between">
                 <div className="w-24 h-24   rounded-full flex items-center justify-center text-4xl font-bold shadow-md">
                   <Avatar
-                    referrerPolicy="no-referrer"
+                    referrerPolicy= "no-referrer"
                     size="xl"
                     color="whiteAlpha"
                     background="blue.500"

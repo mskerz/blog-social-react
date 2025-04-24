@@ -6,6 +6,8 @@ import { FcGoogle } from "react-icons/fc";
 import { toast } from 'react-toastify';
 import { useTheme } from "../../hook/useTheme";
 import LoadingOverlay from "../LoadingPage";
+import { GOOGLE_AUTH_URL } from "../../constant/endpoint";
+ 
 
 const LoginPage = () => {
   const [email, setEmail] = useState("michael@example.com");
@@ -51,10 +53,10 @@ const LoginPage = () => {
       });
   };
 
-
+ 
   const handleGoogleLogin = () => {
     // เปิด URL สำหรับเริ่มกระบวนการล็อกอินด้วย Google
-    window.location.href = "http://localhost:4000/api/auth/google";
+    window.location.href = GOOGLE_AUTH_URL;
   };
   if (status == "loading") {
     return <LoadingOverlay />

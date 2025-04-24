@@ -11,7 +11,7 @@ import SkeletonCreatePostToggle from "../components/posts/card/SkeletonCreatePos
 function HomePage() {
   const dispatch = useDispatch();
   const { user, isLoggedIn } = useSelector((state) => state.auth);
-  const { posts, status, dataPostFetched  } = useSelector((state) => state.post);
+  const { posts, status, dataPostFetched } = useSelector((state) => state.post);
 
   // useMemo
   // useMemo เพื่อคำนวณ sortedPosts เมื่อ posts เปลี่ยนแปลง
@@ -24,8 +24,10 @@ function HomePage() {
   }, [posts]); // เมื่อ posts เปลี่ยนแปลง, จะคำนวณ sortedPosts ใหม่
 
   useEffect(() => {
+
+
     if (!dataPostFetched) {
-      
+
       dispatch(getPosts()); // ดึงข้อมูลโพสต์จาก API ถ้ายังไม่ได้ดึง
     }    // Cleanup timer เมื่อ component unmount
   }, [dataPostFetched, dispatch]);
@@ -44,18 +46,21 @@ function HomePage() {
 
 
       <div className="flex flex-col items-center justify-center">
-        {status === "loading" || sortedPosts.length === 0 ? (
+        {status === "loading" ? (
           <>
             <SkeletonPost width="md" />
             <SkeletonPost width="md" />
             <SkeletonPost width="md" />
           </>
+        ) : sortedPosts.length === 0 ? (
+          <EmptyPosts />
         ) : (
           sortedPosts.map((post, index) => (
             <Post key={index} post={post} isLoggedIn={isLoggedIn} />
           ))
         )}
       </div>
+
     </div>
   );
 }
