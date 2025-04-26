@@ -67,16 +67,13 @@ function Navbar() {
                         <Link to="/" className="flex text-xl items-center gap-2 font-bold">
                             Friendly <SlSocialDribbble className="text-blue-400" />
                         </Link>
+
+
                         <InputGroup>
-                            <InputLeftElement pointerEvents="none">
-                                <CiSearch />
+                            <InputLeftElement pointerEvents='none'>
+                                <CiSearch color='gray.300' size={15} className="mb-2"   />
                             </InputLeftElement>
-                            <Input
-                                width="xs"
-                                size="sm"
-                                rounded="full"
-                                placeholder="ค้นหา..."
-                            />
+                            <Input rounded={"full"} size={"sm"} width={"xs"}   type='tel' placeholder='Search..' />
                         </InputGroup>
                     </div>
 
@@ -143,11 +140,11 @@ function Navbar() {
             </div>
 
             {/* Mobile Dropdown Menu */}
-            
+
             <AnimatePresence>
                 {isMenuOpen && (
                     <motion.div
-                         className="md:hidden container mx-auto"
+                        className="md:hidden container mx-auto"
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}

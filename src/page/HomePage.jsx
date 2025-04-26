@@ -7,7 +7,7 @@ import { getPosts } from "../store/slice/postSlice";
 import EmptyPosts from "../components/posts/card/EmpytyPost";
 import SkeletonPost from "../components/posts/card/SkeletonPost";
 import SkeletonCreatePostToggle from "../components/posts/card/SkeletonCreatePostToggle";
-
+ 
 function HomePage() {
   const dispatch = useDispatch();
   const { user, isLoggedIn } = useSelector((state) => state.auth);
@@ -33,34 +33,39 @@ function HomePage() {
   }, [dataPostFetched, dispatch]);
 
   return (
-    <div className="flex flex-col  min-w-screen pt-20">
-      <div className="flex justify-center">
-        {isLoggedIn ? (
-          <CreatePostToggle user={user} width="md" />
-        ) : status === "loading" ? (
-          <SkeletonCreatePostToggle width={"md"} />
-        ) : (
-          <div></div>
-        )}
+    <div className="flex justify-center mx-auto  min-w-screen pt-20">
+      {/* แสดงเฉพาะจอเล็ก (mobile) */}
+     
+
+      <div className="flex flex-col justify-center">
+        <div className="flex justify-center">
+          {isLoggedIn ? (
+            <CreatePostToggle user={user} width="md" />
+          ) : status === "loading" ? (
+            <SkeletonCreatePostToggle width={"md"} />
+          ) : (
+            <div></div>
+          )}
+        </div>
+
+        <div className="flex flex-col items-center justify-center">
+          {status === "loading" ? (
+            <>
+              <SkeletonPost width="md" />
+              <SkeletonPost width="md" />
+              <SkeletonPost width="md" />
+            </>
+          ) : sortedPosts.length === 0 ? (
+            <EmptyPosts />
+          ) : (
+            sortedPosts.map((post, index) => (
+              <Post key={index} post={post} isLoggedIn={isLoggedIn} />
+            ))
+          )}
+        </div>
       </div>
 
-
-      <div className="flex flex-col items-center justify-center">
-        {status === "loading" ? (
-          <>
-            <SkeletonPost width="md" />
-            <SkeletonPost width="md" />
-            <SkeletonPost width="md" />
-          </>
-        ) : sortedPosts.length === 0 ? (
-          <EmptyPosts />
-        ) : (
-          sortedPosts.map((post, index) => (
-            <Post key={index} post={post} isLoggedIn={isLoggedIn} />
-          ))
-        )}
-      </div>
-
+ 
     </div>
   );
 }
