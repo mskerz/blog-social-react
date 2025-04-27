@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 
 export const login = createAsyncThunk('auth/login', async (credentials, { rejectWithValue }) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const response = await api.post("/signin", credentials); // ใช้ api instance
     return response.data;
@@ -73,6 +73,16 @@ export const changeImageProfile = createAsyncThunk("auth/change-profile-image", 
     const response = await api.post("/change-profile-image", newProfileImage);
     return response.data;
   } catch (error) { 
+    return rejectWithValue(error.response.data);
+  }
+});
+
+
+export const changeBio = createAsyncThunk("auth/change-bio", async (newBio, { rejectWithValue }) => {
+  try {
+    const response = await api.post("/change-bio", newBio);
+    return response.data;
+  } catch (error) {
     return rejectWithValue(error.response.data);
   }
 });
@@ -170,6 +180,17 @@ const authSlice = createSlice({
         state.user.detail.profileImage = action.payload.profileImage
       })
       .addCase(changeImageProfile.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(changeBio.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(changeBio.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user.detail.bio = action.payload.bio
+      })
+      .addCase(changeBio.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })
