@@ -88,7 +88,7 @@ function  Post({ post , width = "md" }) {
                 <div className="font-light text-xs">
                   {TimeFormat.smartDate(post.createDate)}
                 </div>
-              </div>
+               </div>
             </div>
 
             <div className="mt-3 text-sm text-start">{post.content}</div>

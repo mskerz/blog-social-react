@@ -12,6 +12,8 @@ import {
     IconButton,
     Text,
     Avatar,
+    Popover,
+    PopoverTrigger,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { IoNotifications, IoMenu, IoClose } from "react-icons/io5";
@@ -25,6 +27,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import MobileMenuButton from "../ิbutton/MobileMenuButton";
 import { FaRegTrashAlt, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { RiHome2Line } from "react-icons/ri";
+import NotificationPopOver from "../popover/NotificationPopOver";
 function Navbar() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -71,9 +74,9 @@ function Navbar() {
 
                         <InputGroup>
                             <InputLeftElement pointerEvents='none'>
-                                <CiSearch color='gray.300' size={15} className="mb-2"   />
+                                <CiSearch color='gray.300' size={15} className="mb-2" />
                             </InputLeftElement>
-                            <Input rounded={"full"} size={"sm"} width={"xs"}   type='tel' placeholder='Search..' />
+                            <Input rounded={"full"} size={"sm"} width={"xs"} type='tel' placeholder='Search..' />
                         </InputGroup>
                     </div>
 
@@ -85,14 +88,15 @@ function Navbar() {
                         {isLoggedIn ? (
                             <>
                                 <li>
-                                    <Button
-                                        rounded="full"
-                                        size="xs"
-                                        background="blue.900"
-                                        _hover={{ bg: "blue.700" }}
-                                    >
-                                        <IoNotifications color="white" size="1.5em" />
-                                    </Button>
+                                    <Popover>
+                                        <PopoverTrigger>
+                                            <IconButton variant="ghost"
+                                                rounded="full" icon={<IoNotifications />} />
+                                        </PopoverTrigger>
+
+                                        <NotificationPopOver />
+                                    </Popover>
+
                                 </li>
                                 <li>
                                     <ProfileDropDown
