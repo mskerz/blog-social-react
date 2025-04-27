@@ -26,11 +26,10 @@ const AuthCallback = () => {
       navigate('/profile');
     } else if (error) {
       // Navigate to login with error
+      console.log("have some thing ");
+      
       navigate('/login', { state: { error } });
-    } else {
-      // Something went wrong
-      navigate('/login');
-    }
+    } 
   }, [location, dispatch, navigate]);
   
   return (
