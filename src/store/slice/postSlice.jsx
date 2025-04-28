@@ -102,26 +102,32 @@ const postSlice = createSlice({
             const { postId, user } = action.payload;
             // ฟังก์ชันช่วยสำหรับการไลค์โพสต์
             const toggleLike = (postList) => {
-                const postIndex = postList.findIndex((post) => post.postId === postId);
-                if (postIndex !== -1) {
-                    const post = postList[postIndex];
-                    const userIndex = post.likes.findIndex(
-                        (like) => like.user_like_fullname === user.fullname
-                    );
-
-                    if (userIndex === -1) {
-                        // กดไลค์ -> เพิ่ม user เข้าไปใน likes[]
-                        post.likes.push({
-                            user_like_fullname: user.fullname,
-                            user_like_profileImage: user.profileImage,
-                            likedAt: new Date().toISOString(),
-                        });
-                    } else {
-                        // ยกเลิกไลค์ -> ลบ user ออกจาก likes[]
-                        post.likes.splice(userIndex, 1);
+                // ตรวจสอบว่า postList เป็นอาร์เรย์หรือไม่
+                if (Array.isArray(postList)) {
+                    const postIndex = postList.findIndex((post) => post.postId === postId);
+                    if (postIndex !== -1) {
+                        const post = postList[postIndex];
+                        const userIndex = post.likes.findIndex(
+                            (like) => like.user_like_fullname === user.fullname
+                        );
+            
+                        if (userIndex === -1) {
+                            // กดไลค์ -> เพิ่ม user เข้าไปใน likes[]
+                            post.likes.push({
+                                user_like_fullname: user.fullname,
+                                user_like_profileImage: user.profileImage,
+                                likedAt: new Date().toISOString(),
+                            });
+                        } else {
+                            // ยกเลิกไลค์ -> ลบ user ออกจาก likes[]
+                            post.likes.splice(userIndex, 1);
+                        }
                     }
+                } else {
+                    console.error("Invalid postList: Not an array");
                 }
             };
+            
 
             // เรียกฟังก์ชันสำหรับทั้ง posts และ currentUserPosts
             toggleLike(state.posts);
