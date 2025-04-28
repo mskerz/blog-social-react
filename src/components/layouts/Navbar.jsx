@@ -64,7 +64,7 @@ function Navbar() {
         <nav className="shadow-md w-full  fixed top-0 z-50">
             <div className="container mx-auto p-3 flex justify-between items-center">
                 {/* ================= Desktop View ================= */}
-                <div className="hidden md:flex justify-between items-center w-full">
+                <div className="hidden md:flex justify-around items-center w-full">
                     {/* Left: Logo & Search */}
                     <div className="flex items-center space-x-3">
                         <Link to="/" className="flex text-xl items-center gap-2 font-bold">
@@ -72,7 +72,7 @@ function Navbar() {
                         </Link>
 
 
-                        <InputGroup>
+                        <InputGroup mx={14}>
                             <InputLeftElement pointerEvents='none'>
                                 <CiSearch color='gray.300' size={15} className="mb-2" />
                             </InputLeftElement>
