@@ -29,7 +29,7 @@ const initialState = {
     error: null,
     dataPostFetcheds: {}, // เก็บสถานะว่าโพสต์ของ username ใดถูกโหลดหรือไม่
     currentUsername: null, // เพิ่มตัวแปรเก็บ username ปัจจุบัน
-
+ 
 
 }
 
@@ -40,32 +40,37 @@ const otherAuthorSlice = createSlice({
     reducers: {
         EffectToggleAuthorLike: (state, action) => {
             const { postId, user } = action.payload;
-            const posts = state.posts[state.currentUsername]
-            const postIndex = posts.findIndex(post => post.postId === postId);
-
-            if (postIndex !== -1) {
-                const post = posts[postIndex];
-                if (!Array.isArray(post.likes)) {
-                    post.likes = [];
+            const posts = state.posts[state.currentUsername];
+        
+            // เช็คว่า posts เป็น array หรือไม่
+            if (Array.isArray(posts)) {
+                const postIndex = posts.findIndex(post => post.postId === postId);
+        
+                if (postIndex !== -1) {
+                    const post = posts[postIndex];
+                    if (!Array.isArray(post.likes)) {
+                        post.likes = [];
+                    }
+        
+                    const userIndex = post.likes.findIndex(
+                        like => like.user_like_fullname === user.fullname
+                    );
+        
+                    if (userIndex === -1) {
+                        // กดไลค์
+                        post.likes.push({
+                            user_like_fullname: user.fullname,
+                            user_like_profileImage: user.profileImage,
+                            likedAt: new Date().toISOString(),
+                        });
+                    } else {
+                        // ยกเลิกไลค์
+                        post.likes.splice(userIndex, 1);
+                    }
                 }
-
-                const userIndex = post.likes.findIndex(
-                    like => like.user_like_fullname === user.fullname
-                );
-
-                if (userIndex === -1) {
-                    // กดไลค์
-                    post.likes.push({
-                        user_like_fullname: user.fullname,
-                        user_like_profileImage: user.profileImage,
-                        likedAt: new Date().toISOString(),
-                    });
-                } else {
-                    // ยกเลิกไลค์
-                    post.likes.splice(userIndex, 1);
-                }
-            }
-        },
+            } 
+        }
+        ,
 
         EffectCommentLocal: (state, action) => {
             const { postId, commentData } = action.payload;
