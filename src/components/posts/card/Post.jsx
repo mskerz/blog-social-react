@@ -66,7 +66,7 @@ function  Post({ post , width = "md" }) {
   return (
     <>
       <Card my={3} rounded={"2xl"} width={width}>
-        <CardBody  >
+        <CardBody>
           <div className="flex flex-col">
             <div className="flex flex-row items-center">
               <Avatar
@@ -77,9 +77,9 @@ function  Post({ post , width = "md" }) {
                 name={post.authorName}
                 size="sm"
                 border={"2px"}
-                bg={isUserPost ? "blue.500" : "gray.500"} // ใช้สีตามเดิมถ้าไม่ใช่โพสต์ของผู้ใช้
-                onClick={handleAvatarClick} // เพิ่มการคลิกที่ Avatar
-                cursor="pointer"  
+                bg={isUserPost ? "blue.500" : "gray.500"}
+                onClick={handleAvatarClick}
+                cursor="pointer"
                 color={"white"}
                 mr={2}
               />
@@ -88,15 +88,13 @@ function  Post({ post , width = "md" }) {
                 <div className="font-light text-xs">
                   {TimeFormat.smartDate(post.createDate)}
                 </div>
-               </div>
+              </div>
             </div>
 
             <div className="mt-3 text-sm text-start">{post.content}</div>
 
-            {/* กรณีมีรูปภาพ */}
             {post.imagePosts && post.imagePosts.length > 0 && (
               <>
-                {/* กรณีมีเพียง 1 รูป */}
                 {post.imagePosts.length === 1 ? (
                   <Box mt={3}>
                     <Image
@@ -110,10 +108,27 @@ function  Post({ post , width = "md" }) {
                       objectFit="cover"
                     />
                   </Box>
-                ) : (
-                  /* กรณีมีหลายรูป */
+                ) : post.imagePosts.length === 2 ? (
                   <Box display="flex" mt={3}>
-                    {/* รูปแรกขนาดใหญ่ทางซ้าย */}
+                    {post.imagePosts.map((image, index) => (
+                      <Box key={index} flex="1" >
+                        <Image
+                          rounded="sm"
+                          loading="lazy"
+                          src={image}
+                          alt={`Post image ${index + 1}`}
+                          onClick={() => handleImageClick(image)}
+                          cursor="pointer"
+                          _hover={{ opacity: 0.95 }}
+                          width="100%"
+                          height="100%"
+                          objectFit="cover"
+                        />
+                      </Box>
+                    ))}
+                  </Box>
+                ) : (
+                  <Box display="flex" mt={3}>
                     <Box flex="3" pr={0}>
                       <Image
                         rounded="sm"
@@ -127,8 +142,6 @@ function  Post({ post , width = "md" }) {
                         objectFit="cover"
                       />
                     </Box>
-
-                    {/* รูปที่เหลือแสดงเป็นกริด 2 คอลัมน์ทางขวา */}
                     <Box
                       flex="2"
                       display="grid"
@@ -137,7 +150,6 @@ function  Post({ post , width = "md" }) {
                       {post.imagePosts
                         .slice(1, MAX_VISIBLE_IMAGES)
                         .map((image, index) => {
-                          // ตรวจสอบว่าเป็นรูปสุดท้ายที่จะแสดงและมีรูปเหลืออีกหรือไม่
                           const isLastVisibleWithMore =
                             index === MAX_VISIBLE_IMAGES - 2 &&
                             remainingImages > 0;
@@ -159,8 +171,6 @@ function  Post({ post , width = "md" }) {
                                 height="100%"
                                 objectFit="cover"
                               />
-
-                              {/* แสดง + จำนวนรูปที่เหลือ */}
                               {isLastVisibleWithMore && (
                                 <Box
                                   position="absolute"
@@ -198,9 +208,12 @@ function  Post({ post , width = "md" }) {
             )}
           </div>
         </CardBody>
-        <CardFooter mt={-5}>                     
-
-          <LikeBar post={post} onClickLikeDetail={LikesDetailClick} onOpenModal={() => handleImageClick(selectedImage)} />
+        <CardFooter mt={-5}>
+          <LikeBar
+            post={post}
+            onClickLikeDetail={LikesDetailClick}
+            onOpenModal={() => handleImageClick(selectedImage)}
+          />
         </CardFooter>
       </Card>
       <ModalPost
