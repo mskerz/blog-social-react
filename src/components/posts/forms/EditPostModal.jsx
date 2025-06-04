@@ -76,7 +76,7 @@ function EditPostModal({ isOpen, onClose, post }) {
 
                     {/* Header */}
                     <Flex justify="space-between" align="center" mb={2}>
-                        <p className="text-xl font-semibold">สร้างโพสต์</p>
+                        <p className="text-xl font-semibold">แก้ไขโพสต์</p>
                         <ModalCloseButton cursor="pointer" />
                     </Flex>
                     <Divider />
