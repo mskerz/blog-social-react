@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../config/network";
 import { v4 as uuidv4 } from "uuid"; // เพิ่ม uuid เพื่อสร้าง postId ที่ unique
-import { data } from "react-router-dom";
 
 export const getPosts = createAsyncThunk(
     "get/getPosts",
@@ -43,6 +42,23 @@ export const createPostUser = createAsyncThunk(
         }
     }
 );
+
+export const editPostUser = createAsyncThunk(
+    "post/editPostUser",
+    async (postEditData, { rejectWithValue }) => {
+        ///post/update/:postId
+        try {
+            const body = { content: postEditData.content, imagePosts: postEditData.imagePosts };
+            const response = await api.put(`/post/update/${postEditData.postId}`, body);
+            console.log(`response edit post : ${response.data.post}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+
+    }
+);
+
 
 export const moveToTrash = createAsyncThunk(
     "post/moveToTrash",
@@ -110,7 +126,7 @@ const postSlice = createSlice({
                         const userIndex = post.likes.findIndex(
                             (like) => like.user_like_fullname === user.fullname
                         );
-            
+
                         if (userIndex === -1) {
                             // กดไลค์ -> เพิ่ม user เข้าไปใน likes[]
                             post.likes.push({
@@ -127,7 +143,7 @@ const postSlice = createSlice({
                     console.error("Invalid postList: Not an array");
                 }
             };
-            
+
 
             // เรียกฟังก์ชันสำหรับทั้ง posts และ currentUserPosts
             toggleLike(state.posts);
@@ -304,6 +320,38 @@ const postSlice = createSlice({
                 state.status = "failed";
                 state.error = action.payload;
             })
+            // edit posts
+            .addCase(editPostUser.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(editPostUser.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                const { updatePost } = action.payload;
+                const { postId  ,  content, images} = updatePost;
+
+                const updatePosts = (list) => {
+                    const postIndex = list.findIndex((post) => post.postId === postId);
+                    if (postIndex !== -1) {
+                        list[postIndex].content = content;
+                        list[postIndex].imagePosts = images;
+                    }
+                };
+                updatePosts(state.posts);
+                updatePosts(state.currentUserPosts);
+
+
+
+            })
+            .addCase(editPostUser.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+
+
+
+
+
+
             .addCase(moveToTrash.pending, (state, action) => {
                 state.status = "loading";
             })

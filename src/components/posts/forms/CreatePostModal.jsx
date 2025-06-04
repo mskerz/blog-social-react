@@ -1,44 +1,40 @@
-import { Avatar, Box, Button, Divider, Flex, Modal, ModalBody, CloseButton, ModalCloseButton, ModalContent, ModalFooter, ModalOverlay, Textarea, useColorModeValue } from "@chakra-ui/react"
+import { Avatar, Box, Button, Divider, Flex, Modal, ModalBody, CloseButton, ModalCloseButton, ModalContent, ModalOverlay, Textarea, useColorModeValue } from "@chakra-ui/react"
 import { useDispatch, useSelector } from "react-redux"
 import { MdPublic, MdOutlineEmojiEmotions as MdEmoji } from "react-icons/md";
 import { RiImageAddLine } from "react-icons/ri";
 import EmojiPicker from 'emoji-picker-react';
-import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { createPostLocal, createPostUser, getPosts } from "../../../store/slice/postSlice";
+import { usePostContent, usePostImages } from "../../../hook/usePostModal";
 
 function CreatePostModal({ isOpen, onClose }) {
-    const [content, setContent] = useState('ทริปเชียงใหม่ครั้งแรก! บรรยากาศดี คนไม่เยอะ เดินเล่นชิลๆ ฟีลดีมาก 😍🌿');
-    const [isDisabled, setDisable] = useState(true);
-    const [showPicker, setShowPicker] = useState(false); // สำหรับเปิด/ปิด Emoji Picker
-    const [imagePosts, setImagePosts] = useState([]);
-    const [isShowInputImage, setIsShowInputImage] = useState({});
-    const [firstTimeAddImage, setFirstTimeAddImage] = useState(false);
+    const {
+        content,
+        setContent,
+        showPicker,
+        setShowPicker,
+        isDisabled,
+        setDisable,
+        textareaRef,
+        autoResize,
+        handleEmojiClick,
+        handleTextareaChange,
+    } = usePostContent("");
+
+    const {
+        imagePosts,
+        setImagePosts,
+        firstTimeAddImage,
+        setFirstTimeAddImage,
+        handleImageUrlChange,
+        handleImageClick,
+        deleteImage,
+    } = usePostImages([]);
+
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth)
     const MAX_LIMIT_IMAGE = 4;
-    const textareaRef = useRef(null);
-    const autoResize = () => {
-        const textarea = textareaRef.current;
-        if (textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        }
-    };
-
-    // ฟังก์ชันเพิ่มอีโมจิและปิด Picker
-    const handleEmojiClick = (emojiData) => {
-        setContent((prevContent) => prevContent + emojiData.emoji);
-        setShowPicker(false); // ปิด Picker หลังจากเลือกอีโมจิ
-    };
-
-    // รวมฟังก์ชันเพื่อไม่ให้มี onChange ซ้อนกัน
-    const handleTextareaChange = (e) => {
-        setContent(e.target.value);
-        autoResize();
-        // อัปเดตสถานะปุ่ม disable โดยอัตโนมัติ
-        setDisable(e.target.value.trim() === '');
-    }
+    const closeButtonColor = useColorModeValue("gray.500", "black");
 
     const handleCreatePost = () => {
         if (!content.trim()) {
@@ -82,31 +78,8 @@ function CreatePostModal({ isOpen, onClose }) {
         onClose();
     }
 
-    const handleImageUrlChange = (index, url) => {
-        const updatedImages = [...imagePosts];
-        updatedImages[index] = url;
-        setImagePosts(updatedImages);
-    };
-
-    const handleImageClick = (index) => {
-        const updatedImages = [...imagePosts];
-        updatedImages[index] = ''; // แปลงกลับเป็น input
-        setImagePosts(updatedImages);
-    };
-
-    const deleteImage = (index) => {
-        const updatedImages = [...imagePosts];
-        updatedImages.splice(index, 1);
-
-        setImagePosts(updatedImages);
-
-        if (updatedImages.length === 0) {
-            setFirstTimeAddImage(!firstTimeAddImage);
-        }
-    };
 
 
-    const closeButtonColor = useColorModeValue("gray.500", "black");
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -115,10 +88,12 @@ function CreatePostModal({ isOpen, onClose }) {
                 maxWidth={"60%"}
                 minWidth={"50%"}
                 width="60%"
-                height="60%"
+                height="auto"
                 boxShadow="xl"
                 rounded="lg"
-                border="none" // ลบขอบออก
+                border="none"
+                display="flex"
+                flexDirection="column"
             >
                 <ModalBody className="flex flex-col p-4">
 
@@ -168,7 +143,7 @@ function CreatePostModal({ isOpen, onClose }) {
 
                         {/* Image Upload Section */}
                         <Box mt={4}>
-                            {!firstTimeAddImage && (
+                            {firstTimeAddImage && (
                                 <Button onClick={() => {
                                     setImagePosts([...imagePosts, ''])
                                     setFirstTimeAddImage(true)
@@ -181,17 +156,17 @@ function CreatePostModal({ isOpen, onClose }) {
                                 {imagePosts.map((imageUrl, index) => (
                                     <Box key={index} m={2}>
                                         {imageUrl ? (
-                                            <Box position="relative"  onClick={() => handleImageClick(index)} cursor="pointer" m={2}>
+                                            <Box position="relative" onClick={() => handleImageClick(index)} cursor="pointer" m={2}>
                                                 <CloseButton
-                                                className="right-0 top-0  "
+                                                    className="right-0 top-0  "
                                                     onClick={(e) => {
                                                         e.stopPropagation();  // ป้องกันการเรียก handleImageClick เมื่อคลิก CloseButton
                                                         deleteImage(index);
                                                     }}
                                                     position="absolute"
                                                     color={closeButtonColor}
-                                                     size="sm"
-                                                    
+                                                    size="sm"
+
                                                     zIndex="1"
                                                 />
                                                 <img
@@ -236,17 +211,30 @@ function CreatePostModal({ isOpen, onClose }) {
                             </Button>
                             {showPicker && <EmojiPicker emojiStyle="facebook" onEmojiClick={handleEmojiClick} />}
                         </Box>
+
+
+                    </Flex>
+                    <Flex
+                        direction="row"
+                        justify="space-between"
+                        position="sticky"
+                        bottom="0"
+                        py={2}
+                        mt="auto"
+                        zIndex={1}
+                    >
+                        <Box>
+                            {imagePosts.length > 0 && (
+                                <p className="text-sm text-gray-500">{`คุณได้เพิ่มรูปภาพ ${imagePosts.length} รูป`}</p>
+                            )}
+                        </Box>
+                        <Button onClick={handleCreatePost} isDisabled={isDisabled}>
+                            โพสต์
+                        </Button>
                     </Flex>
 
                 </ModalBody>
-                <ModalFooter display={"flex"} justifyContent={"space-between"} mb={40} >
-                    <Box>
-                        {imagePosts.length > 0 && (
-                            <p className="text-sm text-gray-500">{`คุณได้เพิ่มรูปภาพ ${imagePosts.length} รูป`}</p>
-                        )}
-                    </Box>
-                    <Button   onClick={handleCreatePost} isDisabled={isDisabled} >โพสต์</Button>
-                </ModalFooter>
+
             </ModalContent>
         </Modal>
     )
